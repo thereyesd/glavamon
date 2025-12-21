@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html class="dark" lang="es">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>BeautyFlow - Reserva de Servicios de Belleza</title>
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com" rel="preconnect"/>
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&amp;display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#46ec13",
+                        "background-light": "#f6f8f6",
+                        "background-dark": "#142210",
+                        "surface-dark": "#1d2e19",
+                        "surface-highlight": "#2a4025",
+                        "surface-border": "#3f6732",
+                    },
+                    fontFamily: {
+                        "display": ["Manrope", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "1rem",
+                        "lg": "1.5rem",
+                        "xl": "2rem",
+                        "2xl": "3rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+    <style>
+        body {
+            min-height: max(884px, 100dvh);
+        }
+        /* Custom scrollbar hiding */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+
+    <!-- React Dependencies -->
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/history@5/umd/history.development.js"></script>
+    <script src="https://unpkg.com/react-router@6.3.0/umd/react-router.development.js"></script>
+    <script src="https://unpkg.com/react-router-dom@6.3.0/umd/react-router-dom.development.js"></script>
+    <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display text-gray-900 dark:text-white antialiased overflow-x-hidden">
+    <div id="root"></div>
+
+    <script type="text/babel">
+        // Global destructuring as required
+        const { useState, useEffect } = React;
+        const { createRoot } = ReactDOM;
+        const { MemoryRouter, Routes, Route, Link, useNavigate } = ReactRouterDOM;
+
+        // --- Components ---
+
+        // Screen 1: Service Selection
+        const ServiceSelection = () => {
+            const navigate = useNavigate();
+
+            return (
+                <div className="relative flex h-full min-h-screen w-full flex-col pb-28">
+                    {/* Top App Bar */}
+                    <header className="sticky top-0 z-40 bg-background-light/80 dark:bg-background-dark/80 backdrop-blur-md border-b border-white/5">
+                        <div className="flex items-center justify-between p-4">
+                            <button className="flex size-10 shrink-0 items-center justify-center rounded-full bg-surface-dark/50 hover:bg-surface-dark text-white transition-colors">
+                                <span className="material-symbols-outlined">arrow_back</span>
+                            </button>
+                            <h1 className="text-white text-lg font-bold leading-tight tracking-wide">Selección de Servicios</h1>
+                            <button className="flex size-10 shrink-0 items-center justify-center rounded-full bg-surface-dark/50 hover:bg-surface-dark text-white transition-colors">
+                                <span className="material-symbols-outlined">search</span>
+                            </button>
+                        </div>
+                    </header>
+
+                    {/* Search Bar (Inline) */}
+                    <div className="px-4 py-2">
+                        <div className="relative flex items-center w-full h-12 rounded-full focus-within:ring-2 ring-primary/50 bg-surface-dark overflow-hidden">
+                            <div className="grid place-items-center h-full w-12 text-gray-400">
+                                <span className="material-symbols-outlined">search</span>
+                            </div>
+                            <input className="peer h-full w-full outline-none text-sm text-white bg-transparent pr-4 placeholder-gray-500" id="search" placeholder="Buscar servicio (ej. Corte, Tinte)..." type="text"/>
+                        </div>
+                    </div>
+
+                    {/* Carousel Section: Popular Services */}
+                    <section className="mt-4">
+                        <div className="flex items-center justify-between px-4 pb-4">
+                            <h3 className="text-white text-xl font-bold leading-tight">Servicios más Populares</h3>
+                            <a className="text-primary text-sm font-medium hover:underline" href="#">Ver todos</a>
+                        </div>
+                        <div className="flex overflow-x-auto snap-x snap-mandatory [-ms-scrollbar-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden px-4 pb-4 gap-4">
+                            {/* Card 1 */}
+                            <div className="flex flex-col gap-3 min-w-[160px] w-[160px] snap-center group cursor-pointer">
+                                <div className="relative w-full aspect-[4/5] rounded-xl overflow-hidden shadow-lg">
+                                    <div className="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-110" style={{backgroundImage: 'url("https://lh3.googleusercontent.com/aida-public/AB6AXuD7ebDc9l_dYY1W6M_3BqbDwYal0p0tBg3h2UxZdOT3OV4WPpJs8RItkol6rF1CkdtsE_E4KovrBMprOHccphe5yrHx6aUZnyttzXMdirvAM9XWYJ0eF6PLNlLsokonTORfjL8BBB-2PgKMSen3KnDybAsQHaNI8YiyujRmwvILcwUTR0Fh2vFKWeQJOQbEuuOzAmgx6aRiwPkjm7FtxCTJK8PdQ0MrB-uxpaVXTsm7tzy2WIEF74Zn1at66HRiEOcbEIMrYljF6wc")'}}></div>
+                                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent"></div>
+                                    <div className="absolute bottom-3 left-3 right-3">
+                                        <span className="inline-block px-2 py-1 mb-2 text-[10px] font-bold uppercase tracking-wider text-black bg-primary rounded-sm">Top</span>
+                                        <p className="text-white text-sm font-bold leading-tight">Corte Estilo Bob</p>
+                                    </div>
+                                </div>
+                                <div className="flex justify-between items-center px-1">
+                                    <span className="text-primary font-bold">$45</span>
+                                    <span className="text-gray-400 text-xs flex items-center gap-1"><span className="material-symbols-outlined text-[14px]">schedule</span> 60 min</span>
+                                </div>
+                            </div>
+                            {/* Card 2 */}
+                            <div className="flex flex-col gap-3 min-w-[160px] w-[160px] snap-center group cursor-pointer">
+                                <div className="relative w-full aspect-[4/5] rounded-xl overflow-hidden shadow-lg">
+                                    <div className="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-110" style={{backgroundImage: 'url("https://lh3.googleusercontent.com/aida-public/AB6AXuBfjJYUzhWbgc9u6LGxiPs4yen9U-Pu3mxIEwjtzOtQoOAEzAiacVHzO2Niv5EGzullONRing_qQc63TiHRj5RKn6gu8O_Mo4yj2EfNRs_E65O5V5GO0LVAsZr1P-TilR4rO1avmck2lFRaUY-Z4EKDdxKeZOOdgjqkOA6KSAS0AbKDtiPkSqLwCR6xu_nWbSFSYhGFzsBTM31oRFLyXXNv1xprgkE7zvA_agL4B3Qlyi1R2uCuhKvim29WSCArXWpkpFqMdq4J_UM")'}}></div>
+                                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent"></div>
+                                    <div className="absolute bottom-3 left-3 right-3">
+                                        <p className="text-white text-sm font-bold leading-tight">Balayage Rubio</p>
+                                    </div>
+                                </div>
+                                <div className="flex justify-between items-center px-1">
+                                    <span className="text-primary font-bold">$120</span>
+                                    <span className="text-gray-400 text-xs flex items-center gap-1"><span className="material-symbols-outlined text-[14px]">schedule</span> 180m</span>
+                                </div>
+                            </div>
+                            {/* Card 3 */}
+                            <div className="flex flex-col gap-3 min-w-[160px] w-[160px] snap-center group cursor-pointer">
+                                <div className="relative w-full aspect-[4/5] rounded-xl overflow-hidden shadow-lg">
+                                    <div className="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-110" style={{backgroundImage: 'url("https://lh3.googleusercontent.com/aida-public/AB6AXuAyM_vEurGYyGdtB2k0KCmMovGhDM2qKTdN0QDszbRPXqTFCk-wEhfM_FxQmnONYsS8cG5oCdBKOLZ0zuhOe-e50LjSWdRwMMiSb6QGlegH1NLoT4IVLZZ7hX5Kx2nMV8EN_jXUfVEbrArGWXerzSeoUF4AUQKvwfK2_pVTYtXFSyOkPLWIvMIQQd1HCcoS_Mf6PRPIjZ6Q5XQmZoQOD9gvyZJqSUa6Xh9Lstq_fillHIa-eee__DRejcWr_BvlwSZ7I0Gu3CtCPPM")'}}></div>
+                                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent"></div>
+                                    <div className="absolute bottom-3 left-3 right-3">
+                                        <p className="text-white text-sm font-bold leading-tight">Hidratación Profunda</p>
+                                    </div>
+                                </div>
+                                <div className="flex justify-between items-center px-1">
+                                    <span className="text-primary font-bold">$60</span>
+                                    <span className="text-gray-400 text-xs flex items-center gap-1"><span className="material-symbols-outlined text-[14px]">schedule</span> 45 min</span>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    {/* List Section: All Services */}
+                    <section className="mt-6">
+                        <h3 className="text-white text-xl font-bold leading-tight px-4 pb-4">Todos los Servicios</h3>
+                        <div className="flex flex-col gap-1 px-2">
+                            {/* List Item 1 */}
+                            <div className="group flex items-center justify-between p-4 rounded-xl bg-background-dark hover:bg-surface-dark transition-colors cursor-pointer border border-transparent hover:border-white/5">
+                                <div className="flex items-start gap-4">
+                                    <div className="size-16 rounded-lg bg-cover bg-center bg-surface-highlight shrink-0" style={{backgroundImage: 'url("https://lh3.googleusercontent.com/aida-public/AB6AXuCc8mAb3pL4sRmXLvIB3f1lO-0HlunnN7r20p8uYzdG95thHQYav_Kpytf-ZL6TuTgztHWtVeLbEiCs6RUHmHmu5Ls4MzBv6Md37-hjON2C-qPu7PG25Yalgbe_xqpfHTyza1v_hRP3xxC7jziZTTOLR9Uu08XIgsEQZOGNMuCuJdIgvZEwgoX-3gy1hMNgTVqCjVi_jU0vK073bsomWvicwhS5PUUG6IjTY8HcguGAP8SPNOrxaoW-UOFQuxaH6brXpFPnvX9SMFg")'}}></div>
+                                    <div className="flex flex-col justify-center">
+                                        <p className="text-white text-base font-bold leading-normal mb-1">Corte de Puntas</p>
+                                        <div className="flex items-center gap-3 text-sm text-gray-400">
+                                            <span>30 min</span>
+                                            <span className="size-1 rounded-full bg-gray-600"></span>
+                                            <span className="text-primary">$25.00</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <button className="size-10 rounded-full border border-gray-600 flex items-center justify-center text-gray-400 hover:border-primary hover:text-primary hover:bg-primary/10 transition-all">
+                                    <span className="material-symbols-outlined">add</span>
+                                </button>
+                            </div>
+                            
+                            {/* List Item 2 (Selected State) */}
+                            <div className="group flex items-center justify-between p-4 rounded-xl bg-surface-dark/50 border border-primary/20 cursor-pointer">
+                                <div className="flex items-start gap-4">
+                                    <div className="size-16 rounded-lg bg-cover bg-center bg-surface-highlight shrink-0" style={{backgroundImage: 'url("https://lh3.googleusercontent.com/aida-public/AB6AXuDjdaTLq_-LJGdlX0oSoJRDdj62JqsaYfNaij6qHx9HD7R4XrY_-hlJNd5-aw23fJ1keFTBtybvdeX8EeCB_k-tR8Y_uzRNgypbz_TzAOixm8nfYyCD7LzaChJkg21ocSxJpGFrVNzpqrio6vgYk9mZVBRvU7ELporytO1sjYgWw6queXiPA4Y7_P02XdXMJ2ONK2OmiZUzcut_jKKy9dCreoVXtvP_xbwjA0bybjd7JxGa1NwcRWVdvyB4fE6T8l9wDKO3FMmz6qk")'}}></div>
+                                    <div className="flex flex-col justify-center">
+                                        <p className="text-white text-base font-bold leading-normal mb-1">Manicura Gel</p>
+                                        <div className="flex items-center gap-3 text-sm text-gray-400">
+                                            <span>60 min</span>
+                                            <span className="size-1 rounded-full bg-gray-600"></span>
+                                            <span className="text-primary">$40.00</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <button className="size-10 rounded-full bg-primary flex items-center justify-center text-background-dark shadow-[0_0_15px_rgba(70,236,19,0.4)]">
+                                    <span className="material-symbols-outlined font-bold">check</span>
+                                </button>
+                            </div>
+
+                            {/* List Item 3 */}
+                            <div className="group flex items-center justify-between p-4 rounded-xl bg-background-dark hover:bg-surface-dark transition-colors cursor-pointer border border-transparent hover:border-white/5">
+                                <div className="flex items-start gap-4">
+                                    <div className="size-16 rounded-lg bg-cover bg-center bg-surface-highlight shrink-0" style={{backgroundImage: 'url("https://lh3.googleusercontent.com/aida-public/AB6AXuDNT8YbDU8nH9JM5SKqqnjWxf6fIN0pzzhckW34Z2NMeekk0lKkwpErHHQb5gfDh3w0KcspuP52ODyer06Ds9YMcKgDSfRvEX3cxLWgQ4r928-TdHTrvT-rR415i2uSDdxaAbNnYVDbAE_8O2kug6cblkJeKYCTaBceyqs2zCdn0iU5CAfbK_vhwqOdfMUIjfaShyyz3D_8Movp24v8hX1i6DdxzDl3KswM6OgfIdPrk3GnGrwTHh-VmftAxzo5WYdPCLKKwwtEvHM")'}}></div>
+                                    <div className="flex flex-col justify-center">
+                                        <p className="text-white text-base font-bold leading-normal mb-1">Peinado de Noche</p>
+                                        <div className="flex items-center gap-3 text-sm text-gray-400">
+                                            <span>60 min</span>
+                                            <span className="size-1 rounded-full bg-gray-600"></span>
+                                            <span className="text-primary">$50.00</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <button className="size-10 rounded-full border border-gray-600 flex items-center justify-center text-gray-400 hover:border-primary hover:text-primary hover:bg-primary/10 transition-all">
+                                    <span className="material-symbols-outlined">add</span>
+                                </button>
+                            </div>
+
+                            {/* List Item 4 (Selected State) */}
+                            <div className="group flex items-center justify-between p-4 rounded-xl bg-surface-dark/50 border border-primary/20 cursor-pointer">
+                                <div className="flex items-start gap-4">
+                                    <div className="size-16 rounded-lg bg-cover bg-center bg-surface-highlight shrink-0" style={{backgroundImage: 'url("https://lh3.googleusercontent.com/aida-public/AB6AXuALwGtN3GH3r_sIIlYfx-V3CeJo_YWr4ioMgzJJ1r-WLH_etlhwRGwgbFRhkCdjMmoewIKAjGJe__FGTD4dw5k77ZwzlcGHa3VPKGYOBHxSUkhMAR7dEwFB67rhyRbZSU5s8UC11Lm0IoI3GTL6_xdTdAOSWU-ykYHbOiabeW7ADpeTF0H1LZlpNlMavnMKvcEnj6fmYvFbpC7FwdCklDLSa3rKIv3yltqN3XziTf44eEXPcWY7jdRbdknsoHdEpsnTh-QOw6Yz_q4")'}}></div>
+                                    <div className="flex flex-col justify-center">
+                                        <p className="text-white text-base font-bold leading-normal mb-1">Diseño de Cejas</p>
+                                        <div className="flex items-center gap-3 text-sm text-gray-400">
+                                            <span>30 min</span>
+                                            <span className="size-1 rounded-full bg-gray-600"></span>
+                                            <span className="text-primary">$20.00</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <button className="size-10 rounded-full bg-primary flex items-center justify-center text-background-dark shadow-[0_0_15px_rgba(70,236,19,0.4)]">
+                                    <span className="material-symbols-outlined font-bold">check</span>
+                                </button>
+                            </div>
+                        </div>
+                    </section>
+
+                    {/* Floating Footer Panel */}
+                    <div className="fixed bottom-0 left-0 right-0 z-50 p-4">
+                        <div className="relative w-full rounded-2xl bg-[#233520] border border-white/10 shadow-2xl backdrop-blur-xl p-4 flex items-center justify-between overflow-hidden">
+                            {/* Subtle glow effect inside card */}
+                            <div className="absolute -left-10 top-0 size-32 bg-primary/10 blur-[50px] rounded-full pointer-events-none"></div>
+                            <div className="flex flex-col relative z-10">
+                                <p className="text-primary text-xs font-bold uppercase tracking-wider mb-0.5">Resumen</p>
+                                <div className="flex items-baseline gap-2">
+                                    <span className="text-white text-lg font-bold">2 Servicios</span>
+                                    <span className="text-gray-400 text-sm">• $60.00</span>
+                                </div>
+                            </div>
+                            <Link 
+                                to="/booking"
+                                className="relative z-10 h-12 px-6 rounded-full bg-primary hover:bg-[#3cd610] text-background-dark font-bold text-base flex items-center gap-2 shadow-lg shadow-primary/25 transition-all active:scale-95"
+                            >
+                                Siguiente
+                                <span className="material-symbols-outlined text-[20px]">arrow_forward</span>
+                            </Link>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        // Screen 2: Date & Stylist Selection
+        const BookingDetails = () => {
+            const navigate = useNavigate();
+
+            return (
+                <div className="relative flex min-h-screen w-full flex-col mx-auto max-w-md bg-background-light dark:bg-background-dark overflow-x-hidden shadow-2xl">
+                    {/* Header */}
+                    <header className="sticky top-0 z-50 flex items-center justify-between bg-background-light/95 dark:bg-background-dark/95 p-4 pb-2 backdrop-blur-md">
+                        <button 
+                            onClick={() => navigate(-1)}
+                            className="flex size-10 shrink-0 items-center justify-center rounded-full hover:bg-black/5 dark:hover:bg-white/10 transition-colors"
+                        >
+                            <span className="material-symbols-outlined text-gray-900 dark:text-white" style={{fontSize: "24px"}}>arrow_back</span>
+                        </button>
+                        <h2 className="text-lg font-bold leading-tight tracking-tight flex-1 text-center pr-10">Fecha y Estilista</h2>
+                    </header>
+                    
+                    {/* Main Content */}
+                    <main className="flex-1 flex flex-col pb-28">
+                        {/* Service Summary Card */}
+                        <div className="px-4 py-2">
+                            <div className="flex items-center gap-4 bg-white dark:bg-surface-dark p-3 rounded-xl shadow-sm border border-gray-100 dark:border-white/5">
+                                <div className="bg-center bg-no-repeat aspect-square bg-cover rounded-lg size-16 shrink-0 relative overflow-hidden group" style={{backgroundImage: 'url("https://lh3.googleusercontent.com/aida-public/AB6AXuCJ4dDqO6ZcGTH6e4h98drz6HVopEN0J262FjyFNO-htVKoijj0FKUnyds-05_1XGxVHD3o7lDmuJLxoRYZ3LhY7KboEY1D4OVWgLq7fmATQrAf05U_QlPhyau8GFbw30EnAPmz0RZu-xYIqvPV1mR-W_Ndi24hIBtrnsCpT0Nmah_Nm_VnPRDvxX1duqROA2Wn4BiKyoLPzk4acTld9T58W5FKmHZsWm7A-D8tSm28-bArrK_zlip72HMJ47Jqwtm--1-zoXTXBzQ")'}}>
+                                    <div className="absolute inset-0 bg-black/10 group-hover:bg-black/0 transition-colors"></div>
+                                </div>
+                                <div className="flex flex-col justify-center flex-1">
+                                    <div className="flex justify-between items-start">
+                                        <h3 className="text-base font-bold leading-tight line-clamp-1 mb-1">Corte y Peinado</h3>
+                                        <button className="text-xs font-semibold text-primary hover:text-primary/80 transition-colors">Editar</button>
+                                    </div>
+                                    <p className="text-gray-500 dark:text-gray-400 text-sm font-medium leading-normal line-clamp-2">Duración: 1h • Precio: $45.00</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Stylist Selection */}
+                        <div className="mt-6">
+                            <h3 className="text-xl font-bold leading-tight px-4 text-left pb-4">Elige un Profesional</h3>
+                            <div className="flex w-full overflow-x-auto no-scrollbar px-4 pb-2">
+                                <div className="flex min-h-min flex-row items-start justify-start gap-4">
+                                    {/* Stylist Item: Active (Any) */}
+                                    <div className="flex flex-col items-center gap-2 w-[72px] cursor-pointer group">
+                                        <div className="relative w-[72px] h-[72px]">
+                                            <div className="absolute inset-0 rounded-full border-[3px] border-primary"></div>
+                                            <div className="w-full h-full p-[3px]">
+                                                <div className="w-full h-full bg-center bg-no-repeat bg-cover rounded-full bg-surface-highlight flex items-center justify-center">
+                                                    <span className="material-symbols-outlined text-primary" style={{fontSize: "32px"}}>groups</span>
+                                                </div>
+                                            </div>
+                                            <div className="absolute bottom-0 right-0 bg-primary text-black rounded-full p-[2px] border-2 border-background-dark">
+                                                <span className="material-symbols-outlined text-[14px] font-bold block">check</span>
+                                            </div>
+                                        </div>
+                                        <p className="text-primary text-xs font-bold text-center leading-tight">Cualquiera</p>
+                                    </div>
+                                    {/* Stylist Item: Inactive */}
+                                    <div className="flex flex-col items-center gap-2 w-[72px] cursor-pointer group opacity-60 hover:opacity-100 transition-opacity">
+                                        <div className="relative w-[72px] h-[72px]">
+                                            <div className="w-full h-full p-[3px]">
+                                                <div className="w-full h-full bg-center bg-no-repeat bg-cover rounded-full grayscale group-hover:grayscale-0 transition-all duration-300" style={{backgroundImage: 'url("https://lh3.googleusercontent.com/aida-public/AB6AXuASej_sOxD99z8bHbRUk5mqMu4ZnWUCrUBzC1-Dv6P2o6JyxSTYUNa1QTmfwLCxT87Oy6nZha8B5yL4R5S_5RNxycFZ8TXfHpYGzKD5GUaM5ZHyKchpp3ArHDhSSMu68Mvd29gsU5OYfSuZSd4YSMqLNJF_g2wvATfDG0Gx0rC9dKsKeNhXYHPXfjRWNPKCgaHaKIxUc-1Xyb0qVslC7-MEELNTx3z0NkKVVuzY7BCk_a01y4YgnbQq6RdcA9oEzONKLDWi_-ZHP-o")'}}></div>
+                                            </div>
+                                        </div>
+                                        <p className="text-gray-600 dark:text-gray-300 text-xs font-medium text-center leading-tight">Ana</p>
+                                    </div>
+                                    {/* Stylist Item: Inactive */}
+                                    <div className="flex flex-col items-center gap-2 w-[72px] cursor-pointer group opacity-60 hover:opacity-100 transition-opacity">
+                                        <div className="relative w-[72px] h-[72px]">
+                                            <div className="w-full h-full p-[3px]">
+                                                <div className="w-full h-full bg-center bg-no-repeat bg-cover rounded-full grayscale group-hover:grayscale-0 transition-all duration-300" style={{backgroundImage: 'url("https://lh3.googleusercontent.com/aida-public/AB6AXuCsu883I6bjqrgQMxj2JQHqdhpZDLkvs0o8EQKMBGefUdN_Q3TjPtB6kGt9e2Qg2PMS9TNPguHVSj5KNivD4vxCJuHEHPWjfA3-DzsmD0Vft8paxoU5KgdVNNjgTA2cthfwkD0mSaOom6dt1PspjtYnSq8N75NLj1FjA5jCvc3u6sgNTukn3sDwQkdOoQFiPbkFkt7Jc6XBEBCrO2Ng0zsgAZmlvAG37MGYxTIPEYmdS1ecW3tPx6t-_0hLnsamLFlKc4Jk8gzlDL0")'}}></div>
+                                            </div>
+                                        </div>
+                                        <p className="text-gray-600 dark:text-gray-300 text-xs font-medium text-center leading-tight">Carlos</p>
+                                    </div>
+                                    {/* Stylist Item: Inactive */}
+                                    <div className="flex flex-col items-center gap-2 w-[72px] cursor-pointer group opacity-60 hover:opacity-100 transition-opacity">
+                                        <div className="relative w-[72px] h-[72px]">
+                                            <div className="w-full h-full p-[3px]">
+                                                <div className="w-full h-full bg-center bg-no-repeat bg-cover rounded-full grayscale group-hover:grayscale-0 transition-all duration-300" style={{backgroundImage: 'url("https://lh3.googleusercontent.com/aida-public/AB6AXuCl_AweskZEeT6SjrV48m4pJMXCUASmZC8q2BOsQeD1b_OChNRI0EJwpuONLSdf0AkKkm_nZIvNbfn_-VqJcKmxneGQaOVJ6lx1VuD6TWAWFOMDcSvDQQmuQXmkh6dtiGryQhsRgPkR36LROPQ4Co11wCbuCedQkN_5dFXnZuup05N5pHSQJn3MBo94i-frKGxYLobDnWu4FThlAtbdszntnLHsL5hfnwllSTMb0Y4eo6D0W0uHtwXWbXDFK-cg5w581SptC8F9mik")'}}></div>
+                                            </div>
+                                        </div>
+                                        <p className="text-gray-600 dark:text-gray-300 text-xs font-medium text-center leading-tight">Sofia</p>
+                                    </div>
+                                    {/* Stylist Item: Inactive */}
+                                    <div className="flex flex-col items-center gap-2 w-[72px] cursor-pointer group opacity-60 hover:opacity-100 transition-opacity">
+                                        <div className="relative w-[72px] h-[72px]">
+                                            <div className="w-full h-full p-[3px]">
+                                                <div className="w-full h-full bg-center bg-no-repeat bg-cover rounded-full grayscale group-hover:grayscale-0 transition-all duration-300" style={{backgroundImage: 'url("https://lh3.googleusercontent.com/aida-public/AB6AXuA0Z4UvhsLoZon7Jk8yLkpdlPmBUJoTdblnh6q8STZSmXdlVnYR4Bw_ey4uf2oKee0cnPmGHzIpPY4TiMAP0q3YGXBDrjAXXbQpPok0HaWwAfd1Ban5JV_IZfGEMbuMl26mvZE_aH8jTlmC8Awqrd6ZHdqKYcD0HdoXPLxuUhlmKnaUOAWC-4xclYe5dhAkNM5RD6OQI9--Z6gDBz1L7RPZlqG42SGd92wcN1zR41BMAC1JMy5bvYNCajLSwC8lEfKbfTD3-vtwNSI")'}}></div>
+                                            </div>
+                                        </div>
+                                        <p className="text-gray-600 dark:text-gray-300 text-xs font-medium text-center leading-tight">Luis</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Date Selection */}
+                        <div className="mt-8">
+                            <div className="flex justify-between items-end px-4 mb-4">
+                                <h3 className="text-xl font-bold leading-tight">Septiembre 2023</h3>
+                                <button className="text-primary text-sm font-semibold flex items-center gap-1">
+                                    Calendario <span className="material-symbols-outlined text-base">calendar_month</span>
+                                </button>
+                            </div>
+                            <div className="flex w-full overflow-x-auto no-scrollbar px-4 pb-2 snap-x">
+                                <div className="flex flex-row gap-3">
+                                    {/* Day Item: Active */}
+                                    <button className="snap-start flex flex-col items-center justify-center w-[70px] h-[84px] rounded-[24px] bg-primary text-background-dark shadow-[0_0_15px_rgba(70,236,19,0.3)] transition-transform hover:scale-105">
+                                        <span className="text-xs font-bold uppercase tracking-wide opacity-80 mb-1">Lun</span>
+                                        <span className="text-2xl font-bold">12</span>
+                                        <div className="w-1.5 h-1.5 rounded-full bg-black mt-1"></div>
+                                    </button>
+                                    {/* Day Item: Inactive */}
+                                    <button className="snap-start flex flex-col items-center justify-center w-[70px] h-[84px] rounded-[24px] bg-white dark:bg-surface-dark border border-transparent hover:border-primary/30 transition-all group">
+                                        <span className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1">Mar</span>
+                                        <span className="text-2xl font-bold text-gray-900 dark:text-white group-hover:text-primary transition-colors">13</span>
+                                        <div className="w-1.5 h-1.5 rounded-full bg-gray-300 dark:bg-gray-600 mt-1"></div>
+                                    </button>
+                                    {/* Day Item: Inactive */}
+                                    <button className="snap-start flex flex-col items-center justify-center w-[70px] h-[84px] rounded-[24px] bg-white dark:bg-surface-dark border border-transparent hover:border-primary/30 transition-all group">
+                                        <span className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1">Mié</span>
+                                        <span className="text-2xl font-bold text-gray-900 dark:text-white group-hover:text-primary transition-colors">14</span>
+                                        <div className="w-1.5 h-1.5 rounded-full bg-gray-300 dark:bg-gray-600 mt-1"></div>
+                                    </button>
+                                    {/* Day Item: Inactive */}
+                                    <button className="snap-start flex flex-col items-center justify-center w-[70px] h-[84px] rounded-[24px] bg-white dark:bg-surface-dark border border-transparent hover:border-primary/30 transition-all group">
+                                        <span className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1">Jue</span>
+                                        <span className="text-2xl font-bold text-gray-900 dark:text-white group-hover:text-primary transition-colors">15</span>
+                                        <div className="w-1.5 h-1.5 rounded-full bg-primary mt-1"></div>
+                                    </button>
+                                    {/* Day Item: Inactive */}
+                                    <button className="snap-start flex flex-col items-center justify-center w-[70px] h-[84px] rounded-[24px] bg-white dark:bg-surface-dark border border-transparent hover:border-primary/30 transition-all group">
+                                        <span className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1">Vie</span>
+                                        <span className="text-2xl font-bold text-gray-900 dark:text-white group-hover:text-primary transition-colors">16</span>
+                                        <div className="w-1.5 h-1.5 rounded-full bg-gray-300 dark:bg-gray-600 mt-1"></div>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Time Selection */}
+                        <div className="mt-8 px-4">
+                            <h3 className="text-xl font-bold leading-tight pb-4">Horarios Disponibles</h3>
+                            <div className="grid grid-cols-3 gap-3">
+                                {/* Time Chip: Disabled/Past */}
+                                <button className="py-3 px-2 rounded-xl bg-gray-100 dark:bg-surface-dark/50 text-gray-400 dark:text-gray-600 text-sm font-medium border border-transparent cursor-not-allowed line-through decoration-gray-400/50" disabled="">
+                                    09:00 AM
+                                </button>
+                                {/* Time Chip: Selected */}
+                                <button className="py-3 px-2 rounded-xl bg-primary text-background-dark text-sm font-bold border border-primary shadow-[0_0_10px_rgba(70,236,19,0.25)] flex items-center justify-center gap-1">
+                                    <span>09:30 AM</span>
+                                    <span className="material-symbols-outlined text-[16px]">check</span>
+                                </button>
+                                {/* Time Chip: Available */}
+                                <button className="py-3 px-2 rounded-xl bg-white dark:bg-surface-dark text-gray-900 dark:text-white text-sm font-medium border border-gray-200 dark:border-white/10 hover:border-primary hover:text-primary transition-all">
+                                    10:00 AM
+                                </button>
+                                <button className="py-3 px-2 rounded-xl bg-white dark:bg-surface-dark text-gray-900 dark:text-white text-sm font-medium border border-gray-200 dark:border-white/10 hover:border-primary hover:text-primary transition-all">
+                                    10:30 AM
+                                </button>
+                                <button className="py-3 px-2 rounded-xl bg-white dark:bg-surface-dark text-gray-900 dark:text-white text-sm font-medium border border-gray-200 dark:border-white/10 hover:border-primary hover:text-primary transition-all">
+                                    11:00 AM
+                                </button>
+                                <button className="py-3 px-2 rounded-xl bg-white dark:bg-surface-dark text-gray-900 dark:text-white text-sm font-medium border border-gray-200 dark:border-white/10 hover:border-primary hover:text-primary transition-all">
+                                    11:30 AM
+                                </button>
+                                <button className="py-3 px-2 rounded-xl bg-white dark:bg-surface-dark text-gray-900 dark:text-white text-sm font-medium border border-gray-200 dark:border-white/10 hover:border-primary hover:text-primary transition-all">
+                                    01:00 PM
+                                </button>
+                                <button className="py-3 px-2 rounded-xl bg-white dark:bg-surface-dark text-gray-900 dark:text-white text-sm font-medium border border-gray-200 dark:border-white/10 hover:border-primary hover:text-primary transition-all">
+                                    01:30 PM
+                                </button>
+                                <button className="py-3 px-2 rounded-xl bg-white dark:bg-surface-dark text-gray-900 dark:text-white text-sm font-medium border border-gray-200 dark:border-white/10 hover:border-primary hover:text-primary transition-all">
+                                    02:00 PM
+                                </button>
+                            </div>
+                        </div>
+                    </main>
+
+                    {/* Fixed Footer Actions */}
+                    <footer className="fixed bottom-0 w-full max-w-md mx-auto z-40">
+                        {/* Gradient Fade */}
+                        <div className="h-12 w-full bg-gradient-to-t from-background-light dark:from-background-dark to-transparent pointer-events-none"></div>
+                        <div className="bg-background-light dark:bg-background-dark p-4 pt-0">
+                            <div className="flex items-center justify-between mb-4 px-2">
+                                <div className="flex flex-col">
+                                    <span className="text-xs font-medium text-gray-500 dark:text-gray-400">Total a pagar</span>
+                                    <span className="text-2xl font-bold text-gray-900 dark:text-white">$45.00</span>
+                                </div>
+                                <div className="text-right flex flex-col items-end">
+                                    <span className="text-xs font-medium text-gray-500 dark:text-gray-400">Reserva para</span>
+                                    <span className="text-sm font-bold text-primary">Lun, 12 Sep • 09:30 AM</span>
+                                </div>
+                            </div>
+                            <Link 
+                                to="/confirmation"
+                                className="w-full bg-primary hover:bg-[#3bd60f] text-background-dark text-base font-bold h-14 rounded-full flex items-center justify-center gap-2 shadow-[0_4px_20px_rgba(70,236,19,0.25)] transition-all active:scale-[0.98]"
+                            >
+                                Continuar al Pago
+                                <span className="material-symbols-outlined">arrow_forward</span>
+                            </Link>
+                        </div>
+                    </footer>
+                </div>
+            );
+        };
+
+        // Screen 3: Confirmation
+        const Confirmation = () => {
+            const navigate = useNavigate();
+
+            return (
+                <div className="relative flex h-full min-h-screen w-full flex-col overflow-hidden max-w-md mx-auto shadow-2xl bg-background-light dark:bg-background-dark">
+                    {/* Header */}
+                    <header className="flex items-center p-4 pb-2 justify-between sticky top-0 z-10 bg-background-light/95 dark:bg-background-dark/95 backdrop-blur-md">
+                        <button 
+                            onClick={() => navigate(-1)}
+                            className="flex size-10 shrink-0 items-center justify-center rounded-full active:bg-surface-border/20 transition-colors"
+                        >
+                            <span className="material-symbols-outlined text-gray-900 dark:text-white text-[24px]">arrow_back</span>
+                        </button>
+                        <h1 className="text-lg font-bold leading-tight tracking-[-0.015em] flex-1 text-center pr-10 text-gray-900 dark:text-white">Confirmar Reserva</h1>
+                    </header>
+                    
+                    <main className="flex-1 flex flex-col px-4 pb-32 pt-2 gap-6">
+                        {/* Booking Summary Card */}
+                        <section className="flex flex-col gap-2">
+                            <h2 className="text-[20px] font-bold leading-tight pt-2 px-1 text-gray-900 dark:text-white">Tu Cita</h2>
+                            <div className="relative overflow-hidden rounded-xl bg-white dark:bg-surface-dark shadow-lg border border-gray-200 dark:border-surface-border/30">
+                                {/* Image header inside card */}
+                                <div className="h-32 w-full bg-cover bg-center relative" style={{backgroundImage: "url('https://lh3.googleusercontent.com/aida-public/AB6AXuCgalUJrAi9EO4cnlkZbYRnhriQjTsKTHWRa_MvVt3_AkHVcmYOA__WIn8xR7jDN6T8MAeWcuT31V0yQ65FnasXz_7eDsOeSp1QY6mIinxYFZHWRPQ_7IHiVhgDikqSL4AzL8PSpji5TclYwiGLJwc_c06v4bmgBtBUUgJnoNFw4JNNuqvo4S4ULd_YPv2xdJt7OUYN7bd52L2rhb0zlNzK-5pHVUzXQwzCLmXvconVWkv2Qu_49udJcocoomAjsVoP5lG_nmVgT1Q')"}}>
+                                    <div className="absolute inset-0 bg-gradient-to-t from-black/50 dark:from-surface-dark to-transparent"></div>
+                                </div>
+                                <div className="relative -mt-12 p-5 pt-0 flex flex-col gap-4">
+                                    {/* Stylist Info Overlay */}
+                                    <div className="flex items-end justify-between">
+                                        <div className="flex items-center gap-3">
+                                            <div className="h-16 w-16 rounded-full border-4 border-white dark:border-surface-dark bg-cover bg-center shadow-md" style={{backgroundImage: "url('https://lh3.googleusercontent.com/aida-public/AB6AXuAJr1Q_soR-BQWMmN1DXBylNiUwWrNShAPyB7UUHGJPO2-fu6qgPGhgyzg2IDsT8AQk4hCI2zf_FZJcBJMfQtfa0hmEZ5f-YhKJYroH2qRTxCro7BBJ350ZcSvwqcpUKSNMjl8CRuk6-P5KlWnMoj1iTcWt5MJ1a_IKbDlO_WWuY2HpkHzSPhxi4bPawrYc5GI55Do-zD2lCQ2dCwxLqWEdvfwr_xqT2qf9R0qFCUFqa16gGyoRMr5EyWV4oi9K_T8jnNNxs0zqmMw')"}}></div>
+                                            <div className="mb-1">
+                                                <p className="text-xs text-primary font-medium uppercase tracking-wider">Estilista</p>
+                                                <p className="text-lg font-bold text-gray-900 dark:text-white">Ana López</p>
+                                            </div>
+                                        </div>
+                                        <div className="mb-2 flex items-center gap-1 rounded-full bg-black/10 dark:bg-surface-border/30 px-2 py-1 backdrop-blur-sm">
+                                            <span className="material-symbols-outlined text-primary text-[16px] fill-1">star</span>
+                                            <span className="text-xs font-bold text-gray-900 dark:text-white">4.9</span>
+                                        </div>
+                                    </div>
+                                    <hr className="border-gray-200 dark:border-surface-border/50"/>
+                                    {/* Details */}
+                                    <div className="flex flex-col gap-3">
+                                        <div className="flex justify-between items-start">
+                                            <div>
+                                                <p className="text-base font-bold text-gray-900 dark:text-white">Corte y Estilo</p>
+                                                <p className="text-sm text-gray-500 dark:text-gray-400">Duración: 60 min</p>
+                                            </div>
+                                            <p className="text-base font-bold text-primary">$45.00</p>
+                                        </div>
+                                        <div className="flex items-center gap-3 rounded-lg bg-gray-50 dark:bg-background-dark/50 p-3 border border-gray-100 dark:border-surface-border/20">
+                                            <span className="material-symbols-outlined text-primary">calendar_month</span>
+                                            <div className="flex flex-col">
+                                                <span className="text-sm font-bold text-gray-900 dark:text-white">Viernes, 15 Octubre</span>
+                                                <span className="text-xs text-gray-500 dark:text-gray-400">10:00 AM - 11:00 AM</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+                        
+                        {/* Payment Methods */}
+                        <section className="flex flex-col gap-3">
+                            <h3 className="text-lg font-bold leading-tight px-1 text-gray-900 dark:text-white">Método de Pago</h3>
+                            <div className="flex flex-col gap-3" style={{"--radio-dot-svg": "url('data:image/svg+xml,%3csvg viewBox=%270 0 16 16%27 fill=%27rgb(70,236,19)%27 xmlns=%27http://www.w3.org/2000/svg%27%3e%3ccircle cx=%278%27 cy=%278%27 r=%273%27/%3e%3c/svg%3e')"}}>
+                                <label className="group relative flex items-center gap-4 rounded-xl border border-gray-200 dark:border-surface-border bg-white dark:bg-surface-dark p-4 transition-all hover:border-primary/50 has-[:checked]:border-primary has-[:checked]:bg-primary/5">
+                                    <div className="flex items-center justify-center size-10 rounded-full bg-gray-100 dark:bg-surface-border/30 text-gray-900 dark:text-white">
+                                        <span className="material-symbols-outlined">credit_card</span>
+                                    </div>
+                                    <div className="flex grow flex-col">
+                                        <p className="text-gray-900 dark:text-white text-sm font-bold leading-normal">Tarjeta de Crédito</p>
+                                        <p className="text-gray-500 dark:text-gray-400 text-xs font-medium leading-normal">**** 8842</p>
+                                    </div>
+                                    <input defaultChecked className="h-5 w-5 border-2 border-gray-500 bg-transparent text-transparent checked:border-primary checked:bg-[image:--radio-dot-svg] focus:ring-offset-0 focus:ring-0 checked:focus:border-primary" name="payment_method" type="radio"/>
+                                </label>
+                                <label className="group relative flex items-center gap-4 rounded-xl border border-gray-200 dark:border-surface-border bg-white dark:bg-surface-dark p-4 transition-all hover:border-primary/50 has-[:checked]:border-primary has-[:checked]:bg-primary/5">
+                                    <div className="flex items-center justify-center size-10 rounded-full bg-gray-100 dark:bg-surface-border/30 text-gray-900 dark:text-white">
+                                        <span className="material-symbols-outlined">account_balance_wallet</span>
+                                    </div>
+                                    <div className="flex grow flex-col">
+                                        <p className="text-gray-900 dark:text-white text-sm font-bold leading-normal">Apple Pay</p>
+                                    </div>
+                                    <input className="h-5 w-5 border-2 border-gray-500 bg-transparent text-transparent checked:border-primary checked:bg-[image:--radio-dot-svg] focus:ring-offset-0 focus:ring-0 checked:focus:border-primary" name="payment_method" type="radio"/>
+                                </label>
+                                <label className="group relative flex items-center gap-4 rounded-xl border border-gray-200 dark:border-surface-border bg-white dark:bg-surface-dark p-4 transition-all hover:border-primary/50 has-[:checked]:border-primary has-[:checked]:bg-primary/5">
+                                    <div className="flex items-center justify-center size-10 rounded-full bg-gray-100 dark:bg-surface-border/30 text-gray-900 dark:text-white">
+                                        <span className="material-symbols-outlined">storefront</span>
+                                    </div>
+                                    <div className="flex grow flex-col">
+                                        <p className="text-gray-900 dark:text-white text-sm font-bold leading-normal">Pagar en el local</p>
+                                    </div>
+                                    <input className="h-5 w-5 border-2 border-gray-500 bg-transparent text-transparent checked:border-primary checked:bg-[image:--radio-dot-svg] focus:ring-offset-0 focus:ring-0 checked:focus:border-primary" name="payment_method" type="radio"/>
+                                </label>
+                            </div>
+                        </section>
+                        
+                        {/* Notes Input */}
+                        <section className="flex flex-col gap-3">
+                            <h3 className="text-lg font-bold leading-tight px-1 text-gray-900 dark:text-white">Notas Adicionales</h3>
+                            <div className="relative">
+                                <textarea className="w-full rounded-xl bg-white dark:bg-surface-dark border border-gray-200 dark:border-surface-border p-4 text-sm text-gray-900 dark:text-white placeholder:text-gray-500 focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all resize-none" placeholder="Escribe aquí cualquier detalle especial para Ana (opcional)..." rows="3"></textarea>
+                            </div>
+                        </section>
+                        
+                        {/* Legal Text */}
+                        <div className="text-center px-6">
+                            <p className="text-[10px] text-gray-500 leading-relaxed">
+                                Al confirmar, aceptas los <a className="text-gray-400 underline decoration-gray-600" href="#">Términos del Servicio</a> y la <a className="text-gray-400 underline decoration-gray-600" href="#">Política de Cancelación</a> de BeautyFlow. Las cancelaciones con menos de 24 horas de antelación pueden incurrir en cargos.
+                            </p>
+                        </div>
+                    </main>
+
+                    {/* Bottom Action Bar */}
+                    <div className="fixed bottom-0 left-0 right-0 p-4 bg-background-light/90 dark:bg-background-dark/90 backdrop-blur-xl border-t border-gray-200 dark:border-surface-border/30 max-w-md mx-auto z-50">
+                        <div className="flex items-center justify-between mb-4 px-2">
+                            <span className="text-gray-500 dark:text-gray-400 text-sm font-medium">Total a pagar</span>
+                            <span className="text-2xl font-extrabold text-gray-900 dark:text-white tracking-tight">$45.00</span>
+                        </div>
+                        <button className="w-full h-14 bg-primary rounded-full text-background-dark text-base font-bold hover:bg-primary/90 active:scale-[0.98] transition-all flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(70,236,19,0.3)]">
+                            <span>Confirmar y Pagar</span>
+                            <span className="material-symbols-outlined text-[20px]">arrow_forward</span>
+                        </button>
+                    </div>
+                </div>
+            );
+        };
+
+        // --- Main App Component ---
+        const App = () => {
+            return (
+                <MemoryRouter>
+                    <Routes>
+                        <Route path="/" element={<ServiceSelection />} />
+                        <Route path="/booking" element={<BookingDetails />} />
+                        <Route path="/confirmation" element={<Confirmation />} />
+                    </Routes>
+                </MemoryRouter>
+            );
+        };
+
+        const root = createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
