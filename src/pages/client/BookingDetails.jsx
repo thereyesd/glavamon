@@ -5,6 +5,7 @@ import { getAllStylists } from '../../services/stylistService'
 import { getAvailableSlots } from '../../services/bookingService'
 import { format, addDays, isSameDay } from 'date-fns'
 import { es } from 'date-fns/locale'
+import { formatPrice } from '../../utils/formatPrice'
 import toast from 'react-hot-toast'
 import LoadingSpinner from '../../components/common/LoadingSpinner'
 
@@ -143,7 +144,7 @@ export default function BookingDetails() {
                 </button>
               </div>
               <p className="text-gray-400 text-sm font-medium leading-normal">
-                Duración: {totalDuration} min • Precio: ${totalPrice.toFixed(2)}
+                Duración: {totalDuration} min • Precio: {formatPrice(totalPrice)}
               </p>
             </div>
           </div>
@@ -229,7 +230,7 @@ export default function BookingDetails() {
           <div className="flex items-center justify-between mb-4 px-2">
             <div className="flex flex-col">
               <span className="text-xs font-medium text-gray-400">Total a pagar</span>
-              <span className="text-2xl font-bold text-white">${totalPrice.toFixed(2)}</span>
+              <span className="text-2xl font-bold text-white">{formatPrice(totalPrice)}</span>
             </div>
             {selectedDate && selectedTime && (
               <div className="text-right flex flex-col items-end">

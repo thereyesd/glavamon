@@ -2,6 +2,7 @@ import { useState, useRef } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { uploadPaymentProof } from '../../services/storageService'
 import { uploadPaymentProofToBooking, getBooking } from '../../services/bookingService'
+import { formatPrice } from '../../utils/formatPrice'
 import toast from 'react-hot-toast'
 import LoadingSpinner from '../../components/common/LoadingSpinner'
 
@@ -112,7 +113,7 @@ export default function UploadPayment() {
             <div>
               <h2 className="text-white font-bold mb-1">Sube tu comprobante de pago</h2>
               <p className="text-gray-400 text-sm leading-relaxed">
-                Toma una foto o captura de pantalla de tu transferencia por <span className="text-primary font-bold">${totalPrice?.toFixed(2) || '0.00'}</span> y súbela aquí para confirmar tu reserva.
+                Toma una foto o captura de pantalla de tu transferencia por <span className="text-primary font-bold">{formatPrice(totalPrice || 0)}</span> y súbela aquí para confirmar tu reserva.
               </p>
             </div>
           </div>

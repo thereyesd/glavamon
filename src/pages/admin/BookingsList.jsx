@@ -4,6 +4,7 @@ import { useAuth } from '../../context/AuthContext'
 import { getAllBookings, updateBookingStatus, confirmPayment, rejectPayment } from '../../services/bookingService'
 import { format, isToday, isTomorrow, isPast } from 'date-fns'
 import { es } from 'date-fns/locale'
+import { formatPrice } from '../../utils/formatPrice'
 import toast from 'react-hot-toast'
 import LoadingSpinner, { SkeletonList } from '../../components/common/LoadingSpinner'
 
@@ -247,12 +248,12 @@ function AdminBookingCard({ booking, onStatusChange, onConfirmPayment, onRejectP
           {(booking.services || []).map((service, idx) => (
             <div key={idx} className="flex justify-between items-center py-1">
               <span className="text-white text-sm">{service.name}</span>
-              <span className="text-primary text-sm">${(service.price || 0).toFixed(2)}</span>
+              <span className="text-primary text-sm">{formatPrice(service.price || 0)}</span>
             </div>
           ))}
           <div className="flex justify-between items-center pt-2 mt-2 border-t border-surface-border/50">
             <span className="text-gray-400 text-sm">Total</span>
-            <span className="text-white font-bold">${(booking.totalPrice || 0).toFixed(2)}</span>
+            <span className="text-white font-bold">{formatPrice(booking.totalPrice || 0)}</span>
           </div>
         </div>
 

@@ -6,6 +6,7 @@ import { createBooking } from '../../services/bookingService'
 import { getPaymentInfo } from '../../services/configService'
 import { format } from 'date-fns'
 import { es } from 'date-fns/locale'
+import { formatPrice } from '../../utils/formatPrice'
 import toast from 'react-hot-toast'
 import LoadingSpinner from '../../components/common/LoadingSpinner'
 
@@ -161,7 +162,7 @@ export default function Confirmation() {
                       <p className="text-base font-bold text-white">{service.name}</p>
                       <p className="text-sm text-gray-400">Duración: {service.duration} min</p>
                     </div>
-                    <p className="text-base font-bold text-primary">${service.price.toFixed(2)}</p>
+                    <p className="text-base font-bold text-primary">{formatPrice(service.price)}</p>
                   </div>
                 ))}
 
@@ -244,7 +245,7 @@ export default function Confirmation() {
                 <div className="flex items-center justify-between bg-primary/10 rounded-lg p-3 -mx-1">
                   <div>
                     <p className="text-xs text-primary uppercase tracking-wider font-medium">Monto a Transferir</p>
-                    <p className="text-primary font-bold text-2xl">${totalPrice.toFixed(2)}</p>
+                    <p className="text-primary font-bold text-2xl">{formatPrice(totalPrice)}</p>
                   </div>
                   <button
                     onClick={() => copyToClipboard(totalPrice.toFixed(2), 'Monto')}
@@ -300,7 +301,7 @@ export default function Confirmation() {
       <div className="fixed bottom-16 left-0 right-0 p-4 bg-background-dark/90 backdrop-blur-xl border-t border-surface-border/30 max-w-md mx-auto z-50">
         <div className="flex items-center justify-between mb-3 px-2">
           <span className="text-gray-400 text-sm font-medium">Total a pagar</span>
-          <span className="text-2xl font-extrabold text-white tracking-tight">${totalPrice.toFixed(2)}</span>
+          <span className="text-2xl font-extrabold text-white tracking-tight">{formatPrice(totalPrice)}</span>
         </div>
         <button
           onClick={handleConfirm}

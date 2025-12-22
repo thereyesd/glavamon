@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { useBooking } from '../../context/BookingContext'
 import { getAllServices, getPopularServices, searchServices } from '../../services/serviceService'
 import { SkeletonList } from '../../components/common/LoadingSpinner'
+import { formatPrice } from '../../utils/formatPrice'
 import toast from 'react-hot-toast'
 
 export default function ServiceSelection() {
@@ -157,7 +158,7 @@ export default function ServiceSelection() {
                 <span className="text-white text-lg font-bold">
                   {serviceCount} {serviceCount === 1 ? 'Servicio' : 'Servicios'}
                 </span>
-                <span className="text-gray-400 text-sm">• ${totalPrice.toFixed(2)}</span>
+                <span className="text-gray-400 text-sm">• {formatPrice(totalPrice)}</span>
               </div>
             </div>
             <Link
@@ -204,7 +205,7 @@ function PopularServiceCard({ service, isSelected, onToggle }) {
         )}
       </div>
       <div className="flex justify-between items-center px-1">
-        <span className="text-primary font-bold">${service.price}</span>
+        <span className="text-primary font-bold">{formatPrice(service.price)}</span>
         <span className="text-gray-400 text-xs flex items-center gap-1">
           <span className="material-symbols-outlined text-[14px]">schedule</span>
           {service.duration} min
@@ -235,7 +236,7 @@ function ServiceListItem({ service, isSelected, onToggle }) {
           <div className="flex items-center gap-3 text-sm text-gray-400">
             <span>{service.duration} min</span>
             <span className="size-1 rounded-full bg-gray-600" />
-            <span className="text-primary">${service.price.toFixed(2)}</span>
+            <span className="text-primary">{formatPrice(service.price)}</span>
           </div>
         </div>
       </div>

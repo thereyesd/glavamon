@@ -10,6 +10,7 @@ import {
   toggleServicePopular
 } from '../../services/serviceService'
 import { uploadImage } from '../../services/storageService'
+import { formatPrice } from '../../utils/formatPrice'
 import toast from 'react-hot-toast'
 import LoadingSpinner, { SkeletonList } from '../../components/common/LoadingSpinner'
 
@@ -182,7 +183,7 @@ function ServiceCard({ service, onEdit, onToggleActive, onTogglePopular, onDelet
               <p className="text-white font-bold truncate">{service.name}</p>
               <p className="text-gray-400 text-sm">{service.duration} min</p>
             </div>
-            <p className="text-primary font-bold">${service.price}</p>
+            <p className="text-primary font-bold">{formatPrice(service.price)}</p>
           </div>
           <div className="flex items-center gap-2 mt-2">
             {service.isPopular && (
@@ -401,14 +402,14 @@ function ServiceModal({ service, onSave, onClose }) {
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-400 mb-2">Precio ($) *</label>
+              <label className="block text-sm font-medium text-gray-400 mb-2">Precio (Gs.) *</label>
               <input
                 type="number"
                 step="0.01"
                 value={formData.price}
                 onChange={e => setFormData(prev => ({ ...prev, price: e.target.value }))}
                 className="w-full h-12 px-4 rounded-xl bg-surface-dark border border-surface-border text-white focus:border-primary"
-                placeholder="45.00"
+                placeholder="50000"
               />
             </div>
             <div>
