@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
 import {
@@ -9,6 +9,7 @@ import {
   toggleServiceStatus,
   toggleServicePopular
 } from '../../services/serviceService'
+import { uploadImage } from '../../services/storageService'
 import toast from 'react-hot-toast'
 import LoadingSpinner, { SkeletonList } from '../../components/common/LoadingSpinner'
 
@@ -243,6 +244,9 @@ function ServiceCard({ service, onEdit, onToggleActive, onTogglePopular, onDelet
 
 function ServiceModal({ service, onSave, onClose }) {
   const [loading, setLoading] = useState(false)
+  const [uploadingImage, setUploadingImage] = useState(false)
+  const [imagePreview, setImagePreview] = useState(service?.imageUrl || '')
+  const fileInputRef = useRef(null)
   const [formData, setFormData] = useState({
     name: service?.name || '',
     description: service?.description || '',
@@ -252,6 +256,36 @@ function ServiceModal({ service, onSave, onClose }) {
     imageUrl: service?.imageUrl || '',
     isPopular: service?.isPopular || false
   })
+
+  async function handleImageUpload(e) {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    // Validar tipo de archivo
+    if (!file.type.startsWith('image/')) {
+      toast.error('Solo se permiten imágenes')
+      return
+    }
+
+    // Validar tamaño (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error('La imagen no debe superar 5MB')
+      return
+    }
+
+    setUploadingImage(true)
+    try {
+      const result = await uploadImage(file, 'service')
+      setFormData(prev => ({ ...prev, imageUrl: result.url }))
+      setImagePreview(result.url)
+      toast.success('Imagen subida')
+    } catch (error) {
+      console.error('Error uploading image:', error)
+      toast.error('Error al subir imagen')
+    } finally {
+      setUploadingImage(false)
+    }
+  }
 
   async function handleSubmit(e) {
     e.preventDefault()
@@ -283,6 +317,66 @@ function ServiceModal({ service, onSave, onClose }) {
 
         {/* Form */}
         <form onSubmit={handleSubmit} className="p-4 space-y-4">
+          {/* Image Upload */}
+          <div>
+            <label className="block text-sm font-medium text-gray-400 mb-2">Imagen del servicio</label>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              onChange={handleImageUpload}
+              className="hidden"
+            />
+
+            {imagePreview ? (
+              <div className="relative">
+                <img
+                  src={imagePreview}
+                  alt="Preview"
+                  className="w-full h-40 object-cover rounded-xl border border-surface-border"
+                />
+                <button
+                  type="button"
+                  onClick={() => {
+                    setImagePreview('')
+                    setFormData(prev => ({ ...prev, imageUrl: '' }))
+                  }}
+                  className="absolute top-2 right-2 p-2 bg-black/50 rounded-full text-white hover:bg-black/70"
+                >
+                  <span className="material-symbols-outlined text-[18px]">close</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={uploadingImage}
+                  className="absolute bottom-2 right-2 px-3 py-1.5 bg-black/50 rounded-lg text-white text-sm hover:bg-black/70 flex items-center gap-1"
+                >
+                  <span className="material-symbols-outlined text-[16px]">edit</span>
+                  Cambiar
+                </button>
+              </div>
+            ) : (
+              <button
+                type="button"
+                onClick={() => fileInputRef.current?.click()}
+                disabled={uploadingImage}
+                className="w-full h-40 border-2 border-dashed border-surface-border rounded-xl flex flex-col items-center justify-center gap-2 text-gray-400 hover:border-primary hover:text-white transition-colors"
+              >
+                {uploadingImage ? (
+                  <>
+                    <LoadingSpinner size="sm" />
+                    <span className="text-sm">Subiendo...</span>
+                  </>
+                ) : (
+                  <>
+                    <span className="material-symbols-outlined text-[32px]">add_photo_alternate</span>
+                    <span className="text-sm">Subir imagen</span>
+                  </>
+                )}
+              </button>
+            )}
+          </div>
+
           <div>
             <label className="block text-sm font-medium text-gray-400 mb-2">Nombre *</label>
             <input
@@ -345,17 +439,6 @@ function ServiceModal({ service, onSave, onClose }) {
             </select>
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-400 mb-2">URL de Imagen</label>
-            <input
-              type="url"
-              value={formData.imageUrl}
-              onChange={e => setFormData(prev => ({ ...prev, imageUrl: e.target.value }))}
-              className="w-full h-12 px-4 rounded-xl bg-surface-dark border border-surface-border text-white focus:border-primary"
-              placeholder="https://..."
-            />
-          </div>
-
           <label className="flex items-center gap-3 p-4 bg-surface-dark rounded-xl cursor-pointer">
             <input
               type="checkbox"
@@ -368,7 +451,7 @@ function ServiceModal({ service, onSave, onClose }) {
 
           <button
             type="submit"
-            disabled={loading}
+            disabled={loading || uploadingImage}
             className="w-full h-14 bg-primary text-background-dark font-bold rounded-xl disabled:opacity-50 flex items-center justify-center"
           >
             {loading ? <LoadingSpinner size="sm" /> : service ? 'Guardar Cambios' : 'Crear Servicio'}

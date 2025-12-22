@@ -38,6 +38,44 @@ export async function uploadPaymentProof(file, bookingId) {
   }
 }
 
+// Upload generic image (for services, stylists, etc.)
+export async function uploadImage(file, prefix = 'image') {
+  try {
+    // Convert file to base64
+    const base64 = await fileToBase64(file)
+
+    // Remove the data:image/xxx;base64, prefix
+    const base64Data = base64.split(',')[1]
+
+    // Create form data for ImgBB API
+    const formData = new FormData()
+    formData.append('key', IMGBB_API_KEY)
+    formData.append('image', base64Data)
+    formData.append('name', `${prefix}_${Date.now()}`)
+
+    // Upload to ImgBB
+    const response = await fetch('https://api.imgbb.com/1/upload', {
+      method: 'POST',
+      body: formData
+    })
+
+    const data = await response.json()
+
+    if (!data.success) {
+      throw new Error(data.error?.message || 'Error uploading image')
+    }
+
+    return {
+      url: data.data.url,
+      deleteUrl: data.data.delete_url,
+      thumbnail: data.data.thumb?.url
+    }
+  } catch (error) {
+    console.error('Error uploading image:', error)
+    throw error
+  }
+}
+
 // Helper function to convert file to base64
 function fileToBase64(file) {
   return new Promise((resolve, reject) => {
