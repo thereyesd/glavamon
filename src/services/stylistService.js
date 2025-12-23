@@ -5,6 +5,7 @@ import {
   getDoc,
   addDoc,
   updateDoc,
+  deleteDoc,
   serverTimestamp
 } from 'firebase/firestore'
 import { db } from '../config/firebase'
@@ -99,6 +100,12 @@ export async function deleteStylist(id) {
     isActive: false,
     updatedAt: serverTimestamp()
   })
+}
+
+// Hard delete stylist
+export async function hardDeleteStylist(id) {
+  const stylistRef = doc(db, COLLECTION, id)
+  await deleteDoc(stylistRef)
 }
 
 // Toggle stylist active status
