@@ -302,8 +302,8 @@ function ServiceModal({ service, onSave, onClose }) {
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/50 backdrop-blur-sm">
-      <div className="w-full max-w-md bg-background-dark rounded-t-3xl border-t border-surface-border max-h-[90vh] flex flex-col">
+    <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/50 backdrop-blur-sm pb-20">
+      <div className="w-full max-w-md bg-background-dark rounded-t-3xl border-t border-surface-border max-h-[85vh] flex flex-col">
         {/* Header */}
         <div className="shrink-0 bg-background-dark p-4 border-b border-surface-border flex items-center justify-between rounded-t-3xl">
           <h2 className="text-white text-lg font-bold">
