@@ -303,9 +303,9 @@ function ServiceModal({ service, onSave, onClose }) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/50 backdrop-blur-sm">
-      <div className="w-full max-w-md bg-background-dark rounded-t-3xl border-t border-surface-border max-h-[90vh] overflow-y-auto">
+      <div className="w-full max-w-md bg-background-dark rounded-t-3xl border-t border-surface-border max-h-[90vh] flex flex-col">
         {/* Header */}
-        <div className="sticky top-0 bg-background-dark p-4 border-b border-surface-border flex items-center justify-between">
+        <div className="shrink-0 bg-background-dark p-4 border-b border-surface-border flex items-center justify-between rounded-t-3xl">
           <h2 className="text-white text-lg font-bold">
             {service ? 'Editar Servicio' : 'Nuevo Servicio'}
           </h2>
@@ -314,8 +314,8 @@ function ServiceModal({ service, onSave, onClose }) {
           </button>
         </div>
 
-        {/* Form */}
-        <form onSubmit={handleSubmit} className="p-4 space-y-4">
+        {/* Form - Scrollable */}
+        <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto p-4 space-y-4">
           {/* Image Upload */}
           <div>
             <label className="block text-sm font-medium text-gray-400 mb-2">Imagen del servicio</label>
@@ -393,7 +393,7 @@ function ServiceModal({ service, onSave, onClose }) {
               value={formData.description}
               onChange={e => setFormData(prev => ({ ...prev, description: e.target.value }))}
               className="w-full px-4 py-3 rounded-xl bg-surface-dark border border-surface-border text-white focus:border-primary resize-none"
-              rows={3}
+              rows={2}
               placeholder="Descripción del servicio..."
             />
           </div>
@@ -447,15 +447,20 @@ function ServiceModal({ service, onSave, onClose }) {
             />
             <span className="text-white">Marcar como popular</span>
           </label>
+        </form>
 
+        {/* Footer - Fixed button */}
+        <div className="shrink-0 p-4 border-t border-surface-border bg-background-dark">
           <button
             type="submit"
+            form="service-form"
+            onClick={handleSubmit}
             disabled={loading || uploadingImage}
             className="w-full h-14 bg-primary text-background-dark font-bold rounded-xl disabled:opacity-50 flex items-center justify-center"
           >
             {loading ? <LoadingSpinner size="sm" /> : service ? 'Guardar Cambios' : 'Crear Servicio'}
           </button>
-        </form>
+        </div>
       </div>
     </div>
   )
