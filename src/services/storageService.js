@@ -41,6 +41,12 @@ export async function uploadPaymentProof(file, bookingId) {
 // Upload generic image (for services, stylists, etc.)
 export async function uploadImage(file, prefix = 'image') {
   try {
+    // Verificar que la API key esté configurada
+    if (!IMGBB_API_KEY) {
+      console.error('IMGBB API Key no está configurada. Agrega VITE_IMGBB_API_KEY a tu archivo .env')
+      throw new Error('API key de ImgBB no configurada')
+    }
+
     // Convert file to base64
     const base64 = await fileToBase64(file)
 
@@ -61,9 +67,14 @@ export async function uploadImage(file, prefix = 'image') {
 
     const data = await response.json()
 
+    console.log('ImgBB response:', data) // Debug logging
+
     if (!data.success) {
-      throw new Error(data.error?.message || 'Error uploading image')
+      console.error('ImgBB upload failed:', data.error)
+      throw new Error(data.error?.message || 'Error uploading image to ImgBB')
     }
+
+    console.log('Image uploaded successfully:', data.data.url)
 
     return {
       url: data.data.url,

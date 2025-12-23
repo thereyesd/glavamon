@@ -5,7 +5,7 @@ import {
   getAllServicesAdmin,
   createService,
   updateService,
-  deleteService,
+  hardDeleteService,
   toggleServiceStatus,
   toggleServicePopular
 } from '../../services/serviceService'
@@ -93,12 +93,13 @@ export default function ServicesManager() {
   }
 
   async function handleDelete(id) {
-    if (!window.confirm('¿Estás seguro de eliminar este servicio?')) return
+    if (!window.confirm('¿Estás seguro de eliminar este servicio? Esta acción no se puede deshacer.')) return
     try {
-      await deleteService(id)
+      await hardDeleteService(id)
       setServices(services.filter(s => s.id !== id))
-      toast.success('Servicio eliminado')
+      toast.success('Servicio eliminado permanentemente')
     } catch (error) {
+      console.error('Error deleting service:', error)
       toast.error('Error al eliminar')
     }
   }
@@ -169,9 +170,8 @@ export default function ServicesManager() {
 
 function ServiceCard({ service, onEdit, onToggleActive, onTogglePopular, onDelete }) {
   return (
-    <div className={`bg-surface-dark rounded-xl border border-surface-border overflow-hidden ${
-      !service.isActive ? 'opacity-60' : ''
-    }`}>
+    <div className={`bg-surface-dark rounded-xl border border-surface-border overflow-hidden ${!service.isActive ? 'opacity-60' : ''
+      }`}>
       <div className="flex gap-4 p-4">
         <div
           className="size-16 rounded-lg bg-cover bg-center bg-surface-highlight shrink-0"
@@ -214,18 +214,16 @@ function ServiceCard({ service, onEdit, onToggleActive, onTogglePopular, onDelet
         </button>
         <button
           onClick={onTogglePopular}
-          className={`flex-1 py-3 text-sm transition-colors flex items-center justify-center gap-1 ${
-            service.isPopular ? 'text-primary' : 'text-gray-400 hover:text-white hover:bg-surface-highlight/50'
-          }`}
+          className={`flex-1 py-3 text-sm transition-colors flex items-center justify-center gap-1 ${service.isPopular ? 'text-primary' : 'text-gray-400 hover:text-white hover:bg-surface-highlight/50'
+            }`}
         >
           <span className="material-symbols-outlined text-[18px]">star</span>
           Popular
         </button>
         <button
           onClick={onToggleActive}
-          className={`flex-1 py-3 text-sm transition-colors flex items-center justify-center gap-1 ${
-            service.isActive ? 'text-primary' : 'text-gray-400 hover:text-white hover:bg-surface-highlight/50'
-          }`}
+          className={`flex-1 py-3 text-sm transition-colors flex items-center justify-center gap-1 ${service.isActive ? 'text-primary' : 'text-gray-400 hover:text-white hover:bg-surface-highlight/50'
+            }`}
         >
           <span className="material-symbols-outlined text-[18px]">
             {service.isActive ? 'visibility' : 'visibility_off'}
